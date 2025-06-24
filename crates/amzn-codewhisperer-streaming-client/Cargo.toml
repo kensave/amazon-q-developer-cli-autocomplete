@@ -38,6 +38,7 @@ codegen-version = "unknown"
 
 [features]
 behavior-version-latest = []
+debug-requests = ["serde_json", "uuid", "reqwest", "tokio", "chrono"]
 default = [
     "rustls",
     "rt-tokio",
@@ -102,6 +103,29 @@ version = "0.2.9"
 
 [dependencies.tracing]
 version = "0.1"
+
+[dependencies.serde_json]
+version = "1.0"
+optional = true
+
+[dependencies.uuid]
+version = "1.0"
+features = ["v4"]
+optional = true
+
+[dependencies.reqwest]
+version = "0.11"
+features = ["json"]
+optional = true
+
+[dependencies.tokio]
+version = "1.0"
+features = ["rt", "macros"]
+optional = true
+
+[dependencies.chrono]
+version = "0.4"
+optional = true
 
 [dev-dependencies.aws-credential-types]
 version = "1.2.1"

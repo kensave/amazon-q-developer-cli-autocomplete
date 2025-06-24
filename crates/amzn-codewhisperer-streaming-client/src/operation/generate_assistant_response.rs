@@ -84,6 +84,13 @@ impl GenerateAssistantResponse {
                 &client_config.runtime_components,
             ));
         }
+
+        // Add debug interceptor if enabled
+        #[cfg(feature = "debug-requests")]
+        {
+            runtime_plugins = runtime_plugins.with_client_plugin(crate::debug_interceptor::create_debug_interceptor());
+        }
+
         runtime_plugins
     }
 }
@@ -106,7 +113,6 @@ impl ::aws_smithy_runtime_api::client::runtime_plugin::RuntimePlugin for Generat
             ),
         );
 
-        cfg.store_put(::aws_smithy_runtime_api::client::orchestrator::SensitiveOutput);
         cfg.store_put(::aws_smithy_runtime_api::client::orchestrator::Metadata::new(
             "GenerateAssistantResponse",
             "codewhispererstreaming",

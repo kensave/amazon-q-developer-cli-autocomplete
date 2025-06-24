@@ -89,5 +89,8 @@ mod event_stream_serde;
 
 mod json_errors;
 
+#[cfg(feature = "debug-requests")]
+pub mod debug_interceptor;
+
 #[doc(inline)]
 pub use client::Client;
