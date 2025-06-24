@@ -19,7 +19,6 @@ pub struct DebugInterceptorPlugin;
 impl DebugInterceptorPlugin {
     /// Create a new debug interceptor plugin
     pub fn new() -> Self {
-        println!("🔍 [DEBUG FEATURE] Debug interceptor plugin being created");
         Self
     }
 }

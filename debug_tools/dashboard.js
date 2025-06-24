@@ -8,6 +8,7 @@ function debugDashboard() {
         autoRefresh: true,
         autoRefreshInterval: null,
         searchQuery: '',
+        typeFilter: 'ALL', // 'ALL', 'USER', 'TOOL'
 
         // Lifecycle
         init() {
@@ -57,18 +58,36 @@ function debugDashboard() {
 
         // Search and Filter Methods
         filterRequests() {
-            if (!this.searchQuery.trim()) {
-                this.filteredRequests = [...this.requests];
-                return;
+            let filtered = [...this.requests];
+            
+            // Apply type filter
+            if (this.typeFilter !== 'ALL') {
+                filtered = filtered.filter(request => this.getRequestType(request) === this.typeFilter);
             }
+            
+            // Apply search filter
+            if (this.searchQuery.trim()) {
+                const query = this.searchQuery.toLowerCase();
+                filtered = filtered.filter(request => {
+                    // Search in JSON content
+                    const jsonString = JSON.stringify(request).toLowerCase();
+                    if (jsonString.includes(query)) return true;
+                    
+                    // Also search in extracted user message
+                    const userMessage = this.extractUserMessage(request);
+                    if (userMessage && userMessage.toLowerCase().includes(query)) return true;
+                    
+                    return false;
+                });
+            }
+            
+            this.filteredRequests = filtered;
+            console.log(`🔍 Filtered ${this.filteredRequests.length}/${this.requests.length} requests (search: "${this.searchQuery}", type: ${this.typeFilter})`);
+        },
 
-            const query = this.searchQuery.toLowerCase();
-            this.filteredRequests = this.requests.filter(request => {
-                const jsonString = JSON.stringify(request).toLowerCase();
-                return jsonString.includes(query);
-            });
-
-            console.log(`🔍 Filtered ${this.filteredRequests.length}/${this.requests.length} requests for: "${this.searchQuery}"`);
+        setTypeFilter(type) {
+            this.typeFilter = type;
+            this.filterRequests();
         },
 
         clearSearch() {
@@ -156,6 +175,74 @@ function debugDashboard() {
             } catch (error) {
                 return 'Error formatting JSON: ' + error.message;
             }
+        },
+
+        extractUserMessage(request) {
+            try {
+                let message = null;
+                
+                // Method 1: Try to extract from currentMessage structure
+                if (request.body && request.body.unredacted_input) {
+                    const input = request.body.unredacted_input;
+                    
+                    // Look for currentMessage -> userInputMessage -> content
+                    if (input.conversationState && 
+                        input.conversationState.currentMessage && 
+                        input.conversationState.currentMessage.userInputMessage && 
+                        input.conversationState.currentMessage.userInputMessage.content) {
+                        message = input.conversationState.currentMessage.userInputMessage.content;
+                    }
+                }
+                
+                // Method 2: If not found, try the USER MESSAGE pattern in the entire JSON
+                if (!message) {
+                    const jsonString = JSON.stringify(request);
+                    
+                    // Find the outermost USER MESSAGE block
+                    const userMessageRegex = /--- USER MESSAGE BEGIN ---\\n(.*?)\\n--- USER MESSAGE END ---/s;
+                    const match = jsonString.match(userMessageRegex);
+                    
+                    if (match && match[1]) {
+                        message = match[1]
+                            .replace(/\\n/g, ' ')  // Replace newlines with spaces
+                            .replace(/\\"/g, '"')  // Unescape quotes
+                            .replace(/\\\\/g, '\\') // Unescape backslashes
+                            .trim();
+                    }
+                }
+                
+                // Clean up the message if found
+                if (message) {
+                    message = message.trim();
+                    
+                    // Remove any embedded context entries
+                    message = message.replace(/--- CONTEXT ENTRY BEGIN ---.*?--- CONTEXT ENTRY END ---/gs, '').trim();
+                    
+                    // Remove any embedded USER MESSAGE tags (but keep the content)
+                    message = message.replace(/--- USER MESSAGE BEGIN ---/g, '');
+                    message = message.replace(/--- USER MESSAGE END ---/g, '');
+                    
+                    // Clean up extra whitespace
+                    message = message.replace(/\s+/g, ' ').trim();
+                    
+                    // Truncate if too long (for display in snippet)
+                    if (message.length > 100) {
+                        message = message.substring(0, 97) + '...';
+                    }
+                    
+                    return message || null;
+                }
+                
+                return null;
+            } catch (error) {
+                console.error('Error extracting user message:', error);
+                return null;
+            }
+        },
+
+        getRequestType(request) {
+            const userMessage = this.extractUserMessage(request);
+            return userMessage && userMessage.trim() ? 'USER' : 'TOOL';
         },
 
         async copyRequestData(request) {

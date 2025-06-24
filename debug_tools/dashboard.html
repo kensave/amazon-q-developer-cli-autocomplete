@@ -23,6 +23,19 @@
             Auto-refresh (5s)
         </label>
         
+        <!-- Type Filter -->
+        <div class="type-filter">
+            <button @click="setTypeFilter('ALL')" 
+                    :class="{ 'active': typeFilter === 'ALL' }"
+                    class="filter-btn">All</button>
+            <button @click="setTypeFilter('USER')" 
+                    :class="{ 'active': typeFilter === 'USER' }"
+                    class="filter-btn filter-user">User</button>
+            <button @click="setTypeFilter('TOOL')" 
+                    :class="{ 'active': typeFilter === 'TOOL' }"
+                    class="filter-btn filter-tool">Tool</button>
+        </div>
+        
         <!-- Search Bar -->
         <div class="search-container">
             <input type="text" 
@@ -51,6 +64,8 @@
                          :class="{ 'active': selectedRequest?.id === request.id }"
                          @click="selectRequest(request)">
                         <div class="request-header">
+                            <span class="type-tag" :class="`type-${getRequestType(request).toLowerCase()}`" 
+                                  x-text="getRequestType(request)"></span>
                             <span class="method" :class="request.method" x-text="request.method"></span>
                             <span class="path" x-text="request.path"></span>
                             <span class="time" x-text="formatTime(request.timestamp)"></span>
@@ -62,6 +77,12 @@
                             <span class="status" 
                                   :class="`status-${request.response_status}`"
                                   x-text="request.response_status || 'Pending'"></span>
+                        </div>
+                        <!-- User Message Snippet -->
+                        <div x-show="extractUserMessage(request)" class="user-message-snippet">
+                            <span class="message-label">Message:</span>
+                            <span class="message-text" 
+                                  x-html="highlightSearchTerms(extractUserMessage(request) || '', searchQuery)"></span>
                         </div>
                     </div>
                 </template>
