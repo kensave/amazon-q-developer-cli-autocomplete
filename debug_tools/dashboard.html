@@ -84,6 +84,20 @@
                             <span class="message-text" 
                                   x-html="highlightSearchTerms(extractUserMessage(request) || '', searchQuery)"></span>
                         </div>
+                        
+                        <!-- Tool Information -->
+                        <div x-show="getRequestType(request) === 'TOOL' && extractToolInfo(request)" class="tool-info-snippet">
+                            <span class="tool-label">Tool:</span>
+                            <div class="tool-details">
+                                <span class="tool-name" 
+                                      x-html="highlightSearchTerms(extractToolInfo(request)?.name || '', searchQuery)"></span>
+                                <span x-show="extractToolInfo(request)?.count > 1" 
+                                      class="tool-count" 
+                                      x-text="`+${extractToolInfo(request)?.count - 1} more`"></span>
+                            </div>
+                            <span class="tool-id" 
+                                  x-html="highlightSearchTerms(extractToolInfo(request)?.toolUseId || '', searchQuery)"></span>
+                        </div>
                     </div>
                 </template>
             </div>

@@ -380,6 +380,63 @@ body {
     font-weight: bold;
 }
 
+/* Tool Information Snippet */
+.tool-info-snippet {
+    margin-top: 0.5rem;
+    padding: 0.5rem;
+    background: #e3f2fd;
+    border-radius: 4px;
+    border-left: 3px solid var(--info-color);
+}
+
+.tool-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--dark-color);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: block;
+    margin-bottom: 0.25rem;
+}
+
+.tool-details {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.25rem;
+}
+
+.tool-name {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--info-color);
+    font-family: 'Monaco', 'Menlo', monospace;
+}
+
+.tool-count {
+    font-size: 0.7rem;
+    color: var(--dark-color);
+    opacity: 0.7;
+    font-style: italic;
+}
+
+.tool-id {
+    font-size: 0.7rem;
+    color: var(--dark-color);
+    opacity: 0.8;
+    font-family: 'Monaco', 'Menlo', monospace;
+    display: block;
+    word-break: break-all;
+}
+
+.tool-info-snippet .search-highlight {
+    background-color: #ffd700;
+    color: #000;
+    padding: 0.125rem 0.25rem;
+    border-radius: 3px;
+    font-weight: bold;
+}
+
 .empty-state {
     padding: 2rem;
     text-align: center;

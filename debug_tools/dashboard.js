@@ -77,6 +77,13 @@ function debugDashboard() {
                     const userMessage = this.extractUserMessage(request);
                     if (userMessage && userMessage.toLowerCase().includes(query)) return true;
                     
+                    // Also search in tool information
+                    const toolInfo = this.extractToolInfo(request);
+                    if (toolInfo) {
+                        if (toolInfo.name.toLowerCase().includes(query)) return true;
+                        if (toolInfo.toolUseId.toLowerCase().includes(query)) return true;
+                    }
+                    
                     return false;
                 });
             }
@@ -243,6 +250,65 @@ function debugDashboard() {
         getRequestType(request) {
             const userMessage = this.extractUserMessage(request);
             return userMessage && userMessage.trim() ? 'USER' : 'TOOL';
+        },
+
+        extractToolInfo(request) {
+            try {
+                // Look for toolUses in assistantResponseMessage
+                const jsonString = JSON.stringify(request);
+                
+                // Try to find assistantResponseMessage with toolUses
+                if (request.body && request.body.unredacted_input) {
+                    const input = request.body.unredacted_input;
+                    
+                    // First check currentMessage for tool uses (most recent)
+                    if (input.conversationState && 
+                        input.conversationState.currentMessage && 
+                        input.conversationState.currentMessage.assistantResponseMessage &&
+                        input.conversationState.currentMessage.assistantResponseMessage.toolUses) {
+                        
+                        const toolUses = input.conversationState.currentMessage.assistantResponseMessage.toolUses;
+                        if (toolUses.length > 0) {
+                            const firstTool = toolUses[0];
+                            return {
+                                name: firstTool.name || 'Unknown Tool',
+                                toolUseId: firstTool.toolUseId || 'No ID',
+                                count: toolUses.length
+                            };
+                        }
+                    }
+                    
+                    // If not found in currentMessage, look for the LAST one in history
+                    if (input.conversationState && input.conversationState.history) {
+                        let lastToolInfo = null;
+                        
+                        // Iterate through history to find the LAST assistantResponseMessage with toolUses
+                        for (const historyItem of input.conversationState.history) {
+                            if (historyItem.assistantResponseMessage && 
+                                historyItem.assistantResponseMessage.toolUses && 
+                                historyItem.assistantResponseMessage.toolUses.length > 0) {
+                                
+                                const toolUses = historyItem.assistantResponseMessage.toolUses;
+                                const firstTool = toolUses[0];
+                                
+                                // Keep updating lastToolInfo - the last one will be the most recent
+                                lastToolInfo = {
+                                    name: firstTool.name || 'Unknown Tool',
+                                    toolUseId: firstTool.toolUseId || 'No ID',
+                                    count: toolUses.length
+                                };
+                            }
+                        }
+                        
+                        return lastToolInfo;
+                    }
+                }
+                
+                return null;
+            } catch (error) {
+                console.error('Error extracting tool info:', error);
+                return null;
+            }
         },
 
         async copyRequestData(request) {
