@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amazon Q Debug Dashboard</title>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link rel="stylesheet" href="dashboard.css">
+</head>
+<body x-data="debugDashboard()" x-init="init()">
+    <!-- Header -->
+    <header class="header">
+        <h1>Amazon Q Debug Dashboard</h1>
+        <p>Real-time request monitoring for CodeWhisperer streaming client</p>
+    </header>
+
+    <!-- Controls -->
+    <div class="controls">
+        <button @click="clearRequests()" class="btn btn-danger">Clear All</button>
+        <button @click="refreshRequests()" class="btn btn-primary">Refresh</button>
+        <label class="auto-refresh">
+            <input type="checkbox" x-model="autoRefresh" @change="toggleAutoRefresh()"> 
+            Auto-refresh (5s)
+        </label>
+        
+        <!-- Search Bar -->
+        <div class="search-container">
+            <input type="text" 
+                   x-model="searchQuery" 
+                   @input="filterRequests()"
+                   placeholder="Search in JSON data..." 
+                   class="search-input">
+            <button @click="clearSearch()" 
+                    x-show="searchQuery" 
+                    class="search-clear">×</button>
+        </div>
+    </div>
+
+    <!-- Main Layout -->
+    <div class="main-layout">
+        <!-- Left Panel - Request List -->
+        <div class="left-panel">
+            <div class="panel-header">
+                <h2>Requests</h2>
+                <span class="count" x-text="`(${filteredRequests.length}${searchQuery ? '/' + requests.length : ''})`"></span>
+            </div>
+            
+            <div class="request-list" x-show="filteredRequests.length > 0">
+                <template x-for="(request, index) in filteredRequests" :key="request.id">
+                    <div class="request-item" 
+                         :class="{ 'active': selectedRequest?.id === request.id }"
+                         @click="selectRequest(request)">
+                        <div class="request-header">
+                            <span class="method" :class="request.method" x-text="request.method"></span>
+                            <span class="path" x-text="request.path"></span>
+                            <span class="time" x-text="formatTime(request.timestamp)"></span>
+                        </div>
+                        <div class="request-meta">
+                            <span x-show="request.duration_ms" 
+                                  class="duration" 
+                                  x-text="`${request.duration_ms}ms`"></span>
+                            <span class="status" 
+                                  :class="`status-${request.response_status}`"
+                                  x-text="request.response_status || 'Pending'"></span>
+                        </div>
+                    </div>
+                </template>
+            </div>
+
+            <div x-show="filteredRequests.length === 0 && requests.length > 0" class="empty-state">
+                <p>No requests match your search.</p>
+                <p class="hint">Try a different search term.</p>
+            </div>
+
+            <div x-show="requests.length === 0" class="empty-state">
+                <p>No requests captured yet.</p>
+                <p class="hint">Make some requests to see them here.</p>
+            </div>
+        </div>
+
+        <!-- Right Panel - Request Details -->
+        <div class="right-panel">
+            <div x-show="!selectedRequest" class="no-selection">
+                <h2>Select a Request</h2>
+                <p>Click on a request from the list to view its details.</p>
+            </div>
+
+            <div x-show="selectedRequest" class="request-details">
+                <div class="details-header">
+                    <h2>Request Details</h2>
+                    <button @click="copyRequestData(selectedRequest)" class="btn btn-sm">Copy JSON</button>
+                </div>
+
+                <div class="details-content">
+                    <!-- JSON Data with Syntax Highlighting -->
+                    <div class="detail-section">
+                        <h3>JSON Data</h3>
+                        <pre class="json-viewer" x-html="syntaxHighlight(selectedRequest, searchQuery)"></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="dashboard.js"></script>
+</body>
+</html>

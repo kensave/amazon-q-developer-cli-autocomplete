@@ -1,0 +1,438 @@
+/* Modern CSS Variables */
+:root {
+    --primary-color: #232f3e;
+    --secondary-color: #ff9900;
+    --success-color: #28a745;
+    --danger-color: #dc3545;
+    --warning-color: #ffc107;
+    --info-color: #17a2b8;
+    --light-color: #f8f9fa;
+    --dark-color: #343a40;
+    --border-color: #dee2e6;
+    --shadow: 0 2px 4px rgba(0,0,0,0.1);
+    --border-radius: 8px;
+    --spacing: 1rem;
+}
+
+/* Reset and Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--light-color);
+    color: var(--dark-color);
+    line-height: 1.6;
+}
+
+/* Header */
+.header {
+    background: var(--primary-color);
+    color: white;
+    padding: var(--spacing);
+    margin-bottom: var(--spacing);
+}
+
+.header h1 {
+    margin-bottom: 0.5rem;
+}
+
+.header p {
+    opacity: 0.8;
+    margin: 0;
+}
+
+/* Controls */
+.controls {
+    display: flex;
+    gap: var(--spacing);
+    align-items: center;
+    margin-bottom: var(--spacing);
+    padding: 0 var(--spacing);
+    flex-wrap: wrap;
+}
+
+/* Search Container */
+.search-container {
+    position: relative;
+    flex: 1;
+    max-width: 400px;
+    margin-left: auto;
+}
+
+.search-input {
+    width: 100%;
+    padding: 0.5rem 2rem 0.5rem 0.75rem;
+    border: 2px solid var(--border-color);
+    border-radius: var(--border-radius);
+    font-size: 0.875rem;
+    transition: all 0.2s;
+    background: white;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: var(--info-color);
+    box-shadow: 0 0 0 3px rgba(23, 162, 184, 0.1);
+}
+
+.search-clear {
+    position: absolute;
+    right: 0.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    font-size: 1.25rem;
+    cursor: pointer;
+    color: var(--dark-color);
+    opacity: 0.5;
+    width: 1.5rem;
+    height: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s;
+}
+
+.search-clear:hover {
+    opacity: 1;
+    background: var(--border-color);
+}
+
+.btn {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: all 0.2s;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow);
+}
+
+.btn-primary {
+    background: var(--info-color);
+    color: white;
+}
+
+.btn-secondary {
+    background: var(--dark-color);
+    color: white;
+}
+
+.btn-danger {
+    background: var(--danger-color);
+    color: white;
+}
+
+.btn-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+}
+
+.auto-refresh {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+}
+
+/* Main Layout */
+.main-layout {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: var(--spacing);
+    height: calc(100vh - 140px);
+    padding: 0 var(--spacing);
+}
+
+/* Left Panel */
+.left-panel {
+    background: white;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.panel-header {
+    padding: var(--spacing);
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--light-color);
+}
+
+.panel-header h2 {
+    font-size: 1.125rem;
+    margin: 0;
+}
+
+.count {
+    color: var(--dark-color);
+    font-size: 0.875rem;
+    opacity: 0.7;
+}
+
+.request-list {
+    flex: 1;
+    overflow-y: auto;
+}
+
+.request-item {
+    padding: var(--spacing);
+    border-bottom: 1px solid var(--border-color);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.request-item:hover {
+    background: var(--light-color);
+}
+
+.request-item.active {
+    background: #e3f2fd;
+    border-left: 4px solid var(--info-color);
+}
+
+.request-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.25rem;
+}
+
+.method {
+    padding: 0.125rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.method.POST {
+    background: var(--success-color);
+    color: white;
+}
+
+.method.GET {
+    background: var(--info-color);
+    color: white;
+}
+
+.path {
+    font-weight: 500;
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.time {
+    font-size: 0.75rem;
+    color: var(--dark-color);
+    opacity: 0.7;
+}
+
+.request-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+}
+
+.duration {
+    color: var(--success-color);
+    font-weight: 500;
+}
+
+.status {
+    padding: 0.125rem 0.375rem;
+    border-radius: 4px;
+    font-weight: 500;
+}
+
+.status-200 {
+    background: #d4edda;
+    color: #155724;
+}
+
+.status-Pending {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.empty-state {
+    padding: 2rem;
+    text-align: center;
+    color: var(--dark-color);
+    opacity: 0.7;
+}
+
+.hint {
+    font-size: 0.875rem;
+    margin-top: 0.5rem;
+}
+
+/* Right Panel */
+.right-panel {
+    background: white;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.no-selection {
+    padding: 2rem;
+    text-align: center;
+    color: var(--dark-color);
+    opacity: 0.7;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+
+.request-details {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.details-header {
+    padding: var(--spacing);
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--light-color);
+}
+
+.details-header h2 {
+    font-size: 1.125rem;
+    margin: 0;
+}
+
+.details-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: var(--spacing);
+}
+
+.detail-section {
+    margin-bottom: 2rem;
+}
+
+.detail-section h3 {
+    font-size: 1rem;
+    margin-bottom: var(--spacing);
+    color: var(--primary-color);
+    border-bottom: 2px solid var(--border-color);
+    padding-bottom: 0.5rem;
+}
+
+.json-viewer {
+    background: #2d3748;
+    color: #e2e8f0;
+    padding: var(--spacing);
+    border-radius: var(--border-radius);
+    overflow-x: auto;
+    font-family: 'Monaco', 'Menlo', monospace;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    word-break: break-word;
+    position: relative;
+}
+
+/* Syntax Highlighting Colors */
+.json-key {
+    color: #81c784;
+    font-weight: 500;
+}
+
+.json-string {
+    color: #ffb74d;
+}
+
+.json-number {
+    color: #64b5f6;
+}
+
+.json-boolean {
+    color: #f06292;
+    font-weight: bold;
+}
+
+.json-null {
+    color: #90a4ae;
+    font-style: italic;
+}
+
+.json-punctuation {
+    color: #b0bec5;
+}
+
+/* Search Highlighting - Higher specificity to override syntax colors */
+.search-highlight {
+    background-color: #ffd700 !important;
+    color: #000 !important;
+    padding: 0.125rem 0.25rem;
+    border-radius: 3px;
+    font-weight: bold;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .main-layout {
+        grid-template-columns: 1fr;
+        grid-template-rows: 300px 1fr;
+    }
+    
+    .controls {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.5rem;
+    }
+    
+    .search-container {
+        max-width: none;
+        margin-left: 0;
+    }
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--light-color);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--dark-color);
+}

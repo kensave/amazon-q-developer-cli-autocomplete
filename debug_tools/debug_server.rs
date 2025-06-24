@@ -148,9 +148,17 @@ impl DebugServer {
                 
                 // Handle different endpoints
                 let (response_body, content_type) = match path.as_str() {
-                    "/dashboard" => {
+                    "/dashboard" | "/" => {
                         println!("📊 [SERVER] Serving dashboard");
-                        (Self::generate_dashboard_html(&requests_clone), "text/html")
+                        (std::fs::read_to_string("dashboard.html").unwrap_or_else(|_| Self::generate_fallback_dashboard_html(&requests_clone)), "text/html")
+                    },
+                    "/dashboard.css" => {
+                        println!("🎨 [SERVER] Serving CSS");
+                        (std::fs::read_to_string("dashboard.css").unwrap_or_else(|_| String::from("/* CSS file not found */")), "text/css")
+                    },
+                    "/dashboard.js" => {
+                        println!("📜 [SERVER] Serving JavaScript");
+                        (std::fs::read_to_string("dashboard.js").unwrap_or_else(|_| String::from("console.error('JS file not found');")), "application/javascript")
                     },
                     "/api/requests" => {
                         if method == "POST" {
@@ -229,6 +237,11 @@ impl DebugServer {
                 }
             });
         }
+    }
+    
+    fn generate_fallback_dashboard_html(requests: &Arc<Mutex<Vec<RequestLog>>>) -> String {
+        println!("📊 [SERVER] Generating fallback dashboard HTML (external files not found)");
+        Self::generate_dashboard_html(requests)
     }
     
     fn generate_dashboard_html(requests: &Arc<Mutex<Vec<RequestLog>>>) -> String {
